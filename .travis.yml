@@ -1,9 +1,6 @@
-sudo: required
-
-services:
-  - docker
-
-before_install:
-  - docker version
-
+env:
+ - DOCKER_COMPOSE_VERSION=1.4.2
+ 
+ before_install:
+  - sudo rm /usr/local/bin/docker-compose
 
