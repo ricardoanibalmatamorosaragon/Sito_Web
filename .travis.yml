@@ -1,8 +1,19 @@
-env:
-  - DOCKER_COMPOSE_VERSION=1.4.2
+#Diz que os comandos serão executados com sudo
+sudo: required
+#Qual a linguagem será utilizada
+language: ruby
 
+#Diz que o docker será utilzado para ser feito o deploy
+services:
+  - docker
+
+#Irá rodar todos os comandos abaixo antes de fazer o build da aplicação
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+- docker pull carlad/sinatra
+- docker run -d -p 127.0.0.1:80:4567 carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
+- docker ps -a
+- docker run carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec rake test"
+
+#Executara o comando de criação do build
+script:
+- bundle exec rake test
