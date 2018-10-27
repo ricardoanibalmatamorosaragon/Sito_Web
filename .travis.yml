@@ -1,14 +1,27 @@
-#Diz que os comandos serão executados com sudo
 sudo: required
-#Qual a linguagem será utilizada
-language: ruby
 
-#Diz que o docker será utilzado para ser feito o deploy
+language: go
+
 services:
   - docker
+env: 
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+        - DOCKER_COMPOSE_VERSION=1.6.0
 
-#Irá rodar todos os comandos abaixo antes de fazer o build da aplicação
 before_install:
-- docker pull carlad/sinatra
-- docker run -d -p 127.0.0.1:80:4567 carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
-- docker ps -a
+    # list docker-engine versions
+    - apt-cache madison docker-engine
+    
+    # upgrade docker-engine to specific version
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
+    # reinstall docker-compose at specific version
+    - sudo rm -f /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    - chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
+	- git
+
+script:
+    - docker version
