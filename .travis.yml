@@ -1,9 +1,11 @@
 sudo: required
 
-language: go
-
 services:
-  - docker
+    - docker
 
-script:
-  - docker version
+language: bash
+
+before_script:
+    - docker-compose pull
+    - docker-compose up -d
+    - docker ps
